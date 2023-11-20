@@ -1,5 +1,11 @@
 import streamlit as st
 
+pip install stripe 
+
+import stripe
+# Set your Stripe API keys
+stripe.api_key = "sk_test_51OEYvDSA1BIlFWR0UQFp5kbMzNB88pEN4tuQj33CRFAVjHQClTdpMcI7TRVMm08w3N4pSw311MU6F4eOyhkaNpag00zBL9KBFb"
+
 def upi_payment():
     st.subheader("UPI Payment")
     upi_id = st.text_input("Enter UPI ID")
@@ -38,7 +44,27 @@ def process_net_banking_payment(bank_name, account_number):
     else:
         return "Net Banking Payment failed. Please check your information."
 
-
+def process_stripe_debit_card_payment(card_number, expiration_date, cvv):
+    # Use the Stripe API to process debit card payment
+    try:
+        charge = stripe.Charge.create(
+            amount=1000,  # Amount in cents
+            currency="usd",
+            source=stripe.Token.create(
+                card={
+                    "number": card_number,
+                    "exp_month": expiration_date.split("/")[0],
+                    "exp_year": expiration_date.split("/")[1],
+                    "cvc": cvv,
+                }
+            ),
+            description="Debit Card Payment",
+        )
+        return "Debit Card Payment successful! Charge ID: {}".format(charge.id)
+    except stripe.error.CardError as e:
+        return f"Error: {e.error.message}"
+    except stripe.error.StripeError as e:
+        return f"Error: {e.error.message}"
 
 def payment_form():
     st.title("EasyPay")
