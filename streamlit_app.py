@@ -1,7 +1,4 @@
-!pip install stripe
-# app.py
 import streamlit as st
-import stripe
 from dotenv import load_dotenv
 import os
 
