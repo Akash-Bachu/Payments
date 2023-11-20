@@ -1,9 +1,5 @@
 import streamlit as st
 
-import stripe
-# Set your Stripe API keys
-stripe.api_key = "sk_test_51OEYvDSA1BIlFWR0UQFp5kbMzNB88pEN4tuQj33CRFAVjHQClTdpMcI7TRVMm08w3N4pSw311MU6F4eOyhkaNpag00zBL9KBFb"
-
 def upi_payment():
     st.subheader("UPI Payment")
     upi_id = st.text_input("Enter UPI ID")
