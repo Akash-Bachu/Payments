@@ -1,5 +1,14 @@
+# app.py
 import streamlit as st
+import stripe
+from dotenv import load_dotenv
+import os
 
+# Load environment variables from .env file
+load_dotenv()
+
+# Set your Stripe API key
+stripe.api_key = os.getenv("STRIPE_SECRET_KEY")
 def upi_payment():
     st.subheader("UPI Payment")
     upi_id = st.text_input("Enter UPI ID")
