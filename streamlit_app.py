@@ -1,4 +1,7 @@
 import streamlit as st
+import os
+
+stripe_publishable_key = os.environ.get("STRIPE_KEY")
 
 def upi_payment():
     st.subheader("UPI Payment")
