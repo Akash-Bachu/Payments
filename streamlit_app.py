@@ -1,4 +1,8 @@
 import streamlit as st
+import stripe
+
+# Set your Stripe API keys
+stripe.api_key = "sk_test_51OEYvDSA1BIlFWR0UQFp5kbMzNB88pEN4tuQj33CRFAVjHQClTdpMcI7TRVMm08w3N4pSw311MU6F4eOyhkaNpag00zBL9KBFb"
 
 def upi_payment():
     st.subheader("UPI Payment")
@@ -21,7 +25,7 @@ def debit_card_payment():
     expiration_date = st.text_input("Expiration Date (MM/YY)")
     cvv = st.text_input("CVV")
     if st.button("Make Debit Card Payment"):
-        payment_result = process_debit_card_payment(card_number, expiration_date, cvv)
+        payment_result = process_stripe_debit_card_payment(card_number, expiration_date, cvv)
         st.write(f"Payment Result: {payment_result}")
 
 def process_upi_payment(upi_id):
@@ -38,15 +42,30 @@ def process_net_banking_payment(bank_name, account_number):
     else:
         return "Net Banking Payment failed. Please check your information."
 
-def process_debit_card_payment(card_number, expiration_date, cvv):
-    # Simulate debit card payment processing
-    if card_number and expiration_date and cvv:
-        return "Debit Card Payment successful!"
-    else:
-        return "Debit Card Payment failed. Please check your information."
+def process_stripe_debit_card_payment(card_number, expiration_date, cvv):
+    # Use the Stripe API to process debit card payment
+    try:
+        charge = stripe.Charge.create(
+            amount=1000,  # Amount in cents
+            currency="usd",
+            source=stripe.Token.create(
+                card={
+                    "number": card_number,
+                    "exp_month": expiration_date.split("/")[0],
+                    "exp_year": expiration_date.split("/")[1],
+                    "cvc": cvv,
+                }
+            ),
+            description="Debit Card Payment",
+        )
+        return "Debit Card Payment successful! Charge ID: {}".format(charge.id)
+    except stripe.error.CardError as e:
+        return f"Error: {e.error.message}"
+    except stripe.error.StripeError as e:
+        return f"Error: {e.error.message}"
 
 def payment_form():
-    st.title("Payment Interface")
+    st.title("EasyPay")
 
     payment_method = st.selectbox("Select Payment Method", ["UPI", "Net Banking", "Debit Card"])
 
